@@ -1,4 +1,4 @@
-FROM php:5.6-apache-buster
+FROM php:5.6.36-apache-stretch
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG ACCEPT_EULA=Y
@@ -23,7 +23,6 @@ RUN     cp /etc/apt/sources.list /etc/apt/sources.list~ \
         ca-certificates \
         wget \
         nodejs \
-        npm \
         mc \
         git \
         nano \
@@ -37,7 +36,6 @@ RUN     cp /etc/apt/sources.list /etc/apt/sources.list~ \
         libzip-dev \
         zip \
         libxml2-dev \
-        libpq-dev \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libpng-dev \
@@ -46,7 +44,7 @@ RUN     cp /etc/apt/sources.list /etc/apt/sources.list~ \
         libaio1 \
         libaio-dev \
         # Use the default production php configuratio
-        && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
+       # && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
         # Microsoft SQL Drivers dependencies
         && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
         && curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list \

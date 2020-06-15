@@ -82,6 +82,7 @@ RUN     cp /etc/apt/sources.list /etc/apt/sources.list~ \
         && pecl install redis \
         && docker-php-ext-enable \
             redis \
+        # xDebug
         && pecl install xdebug \
         && docker-php-ext-enable xdebug \
         # Microsoft ODBC
@@ -123,4 +124,3 @@ RUN set -e; \
     rm composer-setup.php; \
     adduser --disabled-password --gecos "" composer; \
     su composer -c "composer global require hirak/prestissimo"
-
