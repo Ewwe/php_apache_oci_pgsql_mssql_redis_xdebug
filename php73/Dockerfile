@@ -6,7 +6,8 @@ ARG ACCEPT_EULA=Y
 ENV ORACLE_INSTALLER_PATH="/usr/local/lib"
 # copy oci drivers
 COPY ./oracle_drivers/ $ORACLE_INSTALLER_PATH
-
+COPY ./chilkat_drivers/ /home/chilkat
+#/home/chilkat/chilkat-9.5.0-php-7.3-x86_64-linux.tar.gz
 ENV LD_LIBRARY_PATH="$ORACLE_INSTALLER_PATH/instantclient_12_2"
 ENV TNS_ADMIN="$ORACLE_INSTALLER_PATH/instantclient_12_2"
 ENV ORACLE_BASE="$ORACLE_INSTALLER_PATH/instantclient_12_2"
@@ -15,7 +16,7 @@ ENV NLS_LANG=".AL32UTF8"
 
 RUN     cp /etc/apt/sources.list /etc/apt/sources.list~ \
         && sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list \
-        && apt-get update && apt-get install -y \
+        && apt-get update && apt-get install -y --no-install-recommends \
         # basics
         cmake \
         apt-transport-https \
@@ -23,10 +24,8 @@ RUN     cp /etc/apt/sources.list /etc/apt/sources.list~ \
         ca-certificates \
         wget \
         nodejs \
-        npm \
-        mc \
         git \
-        nano \
+        npm \
         cron \
         openssh-client \
         gettext-base \
@@ -106,6 +105,8 @@ RUN   echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-
       echo "xdebug.trace_format=0" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
       echo "xdebug.profiler_enable=0" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
       echo "xdebug.profiler_enable_trigger=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini;
+
+RUN cp /home/chilkat/chilkat_9_5_0.so /usr/local/lib/php/extensions/no-debug-non-zts-20180731/chilkat_9_5_0.so && docker-php-ext-enable chilkat_9_5_0
 
 # installing composer
 RUN set -e; \
