@@ -93,7 +93,8 @@ RUN     cp /etc/apt/sources.list /etc/apt/sources.list~ \
             pdo_sqlsrv \
         # Clean up
         && apt-get clean \
-        && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* $ORACLE_INSTALLER_PATH/instantclient*.zip
+        && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* $ORACLE_INSTALLER_PATH/instantclient*.zip \
+        && npm cache clean -f && npm install -g n && n stable
 
 
 RUN   echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \

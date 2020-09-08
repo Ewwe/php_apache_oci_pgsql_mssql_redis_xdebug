@@ -1,0 +1,1 @@
+docker build . -t registry.evosoft.cz:5000/php_apache_all_db_chilkat_xdebug:7.3 --no-cache
