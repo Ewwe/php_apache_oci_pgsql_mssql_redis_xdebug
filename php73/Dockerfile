@@ -7,6 +7,7 @@ ENV ORACLE_INSTALLER_PATH="/usr/local/lib"
 # copy oci drivers
 COPY ./oracle_drivers/ $ORACLE_INSTALLER_PATH
 COPY ./chilkat_drivers/ /home/chilkat
+COPY ./opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 #/home/chilkat/chilkat-9.5.0-php-7.3-x86_64-linux.tar.gz
 ENV LD_LIBRARY_PATH="$ORACLE_INSTALLER_PATH/instantclient_12_2"
 ENV TNS_ADMIN="$ORACLE_INSTALLER_PATH/instantclient_12_2"
@@ -84,6 +85,8 @@ RUN     cp /etc/apt/sources.list /etc/apt/sources.list~ \
         # xDebug
         && pecl install xdebug \
         && docker-php-ext-enable xdebug \
+        && docker-php-ext-install opcache \
+        && docker-php-ext-enable opcache \
         # Microsoft ODBC
         && pecl install \
             sqlsrv \
