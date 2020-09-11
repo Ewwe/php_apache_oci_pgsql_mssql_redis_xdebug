@@ -6,7 +6,8 @@ ARG ACCEPT_EULA=Y
 ENV ORACLE_INSTALLER_PATH="/usr/local/lib"
 # copy oci drivers
 COPY ./oracle_drivers/ $ORACLE_INSTALLER_PATH
-
+COPY ./chilkat_drivers/ /home/chilkat
+COPY ./opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 ENV LD_LIBRARY_PATH="$ORACLE_INSTALLER_PATH/instantclient_12_2"
 ENV TNS_ADMIN="$ORACLE_INSTALLER_PATH/instantclient_12_2"
 ENV ORACLE_BASE="$ORACLE_INSTALLER_PATH/instantclient_12_2"
@@ -15,7 +16,7 @@ ENV NLS_LANG=".AL32UTF8"
 
 RUN     cp /etc/apt/sources.list /etc/apt/sources.list~ \
         && sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list \
-        && apt-get update && apt-get install -y \
+        && apt-get update && apt-get install -y --no-install-recommends \
         # basics
         cmake \
         apt-transport-https \
@@ -23,10 +24,8 @@ RUN     cp /etc/apt/sources.list /etc/apt/sources.list~ \
         ca-certificates \
         wget \
         nodejs \
-        npm \
-        mc \
         git \
-        nano \
+        npm \
         cron \
         openssh-client \
         gettext-base \
@@ -62,8 +61,8 @@ RUN     cp /etc/apt/sources.list /etc/apt/sources.list~ \
         && ln -s $ORACLE_INSTALLER_PATH/instantclient_12_2/libocci.so.12.1 $ORACLE_INSTALLER_PATH/instantclient_12_2/libocci.so \
         && ln -s $ORACLE_INSTALLER_PATH/sqlplus /usr/sbin/sqlplus \
         # install php extensions
-        && docker-php-ext-configure zip --with-libzip \
-        && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+        && docker-php-ext-configure zip \
+        && docker-php-ext-configure gd \
         && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
         && docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,$ORACLE_INSTALLER_PATH/instantclient_12_2 \
         && echo 'instantclient,$ORACLE_INSTALLER_PATH/instantclient_12_2' | pecl install oci8 \
@@ -82,8 +81,11 @@ RUN     cp /etc/apt/sources.list /etc/apt/sources.list~ \
         && pecl install redis \
         && docker-php-ext-enable \
             redis \
+        # xDebug
         && pecl install xdebug \
         && docker-php-ext-enable xdebug \
+        && docker-php-ext-install opcache \
+        && docker-php-ext-enable opcache \
         # Microsoft ODBC
         && pecl install \
             sqlsrv \
@@ -93,7 +95,8 @@ RUN     cp /etc/apt/sources.list /etc/apt/sources.list~ \
             pdo_sqlsrv \
         # Clean up
         && apt-get clean \
-        && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* $ORACLE_INSTALLER_PATH/instantclient*.zip
+        && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* $ORACLE_INSTALLER_PATH/instantclient*.zip \
+        && npm cache clean -f && npm install -g n && n stable
 
 
 RUN   echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
@@ -105,6 +108,8 @@ RUN   echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-
       echo "xdebug.trace_format=0" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
       echo "xdebug.profiler_enable=0" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
       echo "xdebug.profiler_enable_trigger=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini;
+
+RUN cp /home/chilkat/chilkat_9_5_0.so /usr/local/lib/php/extensions/no-debug-non-zts-20190902/chilkat_9_5_0.so && docker-php-ext-enable chilkat_9_5_0
 
 # installing composer
 RUN set -e; \
@@ -123,4 +128,3 @@ RUN set -e; \
     rm composer-setup.php; \
     adduser --disabled-password --gecos "" composer; \
     su composer -c "composer global require hirak/prestissimo"
-
