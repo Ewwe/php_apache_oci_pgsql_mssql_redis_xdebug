@@ -1,0 +1,20 @@
+version: '3.7'
+# Do not run this file by play button
+#  docker-compose build --no-cache
+services:
+
+  evosoft_74:
+    image: registry.evosoft.cz:5000/evosoft/app:7.4
+    build:
+      context: ./app_74
+      args:
+        - APACHE_HTTP_PORT=8080
+        - APACHE_HTTPS_PORT=false
+
+  evosoft_73:
+    image: registry.evosoft.cz:5000/evosoft/app:7.3
+    build:
+      context: ./app_73
+      args:
+        - APACHE_HTTP_PORT=8080
+        - APACHE_HTTPS_PORT=false
