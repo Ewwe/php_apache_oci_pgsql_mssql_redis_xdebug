@@ -6,15 +6,17 @@ services:
   evosoft_74:
     image: registry.evosoft.cz:5000/evosoft/app:7.4
     build:
-      context: ./app_74
+      context: ./app_
       args:
         - APACHE_HTTP_PORT=8080
         - APACHE_HTTPS_PORT=false
+        - IMAGE_VERSION=7.4
 
   evosoft_73:
     image: registry.evosoft.cz:5000/evosoft/app:7.3
     build:
-      context: ./app_73
+      context: ./app
       args:
         - APACHE_HTTP_PORT=8080
         - APACHE_HTTPS_PORT=false
+        - - IMAGE_VERSION=7.3
